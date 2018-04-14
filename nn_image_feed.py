@@ -4,7 +4,6 @@ from tkinter import *
 import tensorflow as tf
 import numpy as np
 import math
-import progressbar as pb
 import inflect
 import threading
 import cv2
@@ -76,7 +75,7 @@ def shift(img, sx, sy):
     return shifted
 
 def training():
-  for i in range(10000):
+  for i in range(500):
     batch = mnist.train.next_batch(128)
     if i % 100 == 0:
       train_accuracy = accuracy.eval(feed_dict={
@@ -89,18 +88,30 @@ def training():
 def readimage():
     threading.Timer(1, readimage).start()
     readimage.gray = cv2.imread("img1.png", 0)
-    predictionlist.append(readimage.gray)
-    del predictionlist[0:-2]
-
-    if (predictionlist[-1] == predictionlist[-2]).all():
-        pass
+    if readimage.gray is None:
+        lab.config(font=("Times", 80))
+        labelText.set("Image not found")
+    elif np.all(readimage.gray == 255):
+        lab.config(font=("Times", 80))
+        labelText.set("Image empty")
     else:
-        labelText.set("")
-        time.sleep(0.32)
-        lab.configure(foreground='green')
-        preddigit()
-        time.sleep(0.32)
-        lab.configure(foreground='black')
+        predictionlist.append(readimage.gray)
+        del predictionlist[0:-2]
+
+        if np.array_equal(predictionlist[0],predictionlist[1]):
+            pass
+        else:
+            lab.config(font=("Times", 180))
+            labelText.set("")
+            time.sleep(0.32)
+            lab.configure(foreground='green')
+            preddigit()
+            time.sleep(0.32)
+            lab.configure(foreground='black')
+
+
+
+
 def preddigit():
     gray = cv2.resize(255 - readimage.gray, (28, 28))
 
