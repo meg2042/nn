@@ -85,24 +85,24 @@ def training():
   print('Test accuracy %g' % accuracy.eval(feed_dict={
   x: mnist.test.images, y_: mnist.test.labels}))
 
-def readimage():
-    threading.Timer(1, readimage).start()
-    readimage.gray = cv2.imread("img1.png", 0)
-    if readimage.gray is None:
-        lab.config(font=("Times", 80))
+def read_image():
+    threading.Timer(1, read_image).start()
+    read_image.gray = cv2.imread("img1.png", 0)
+    if read_image.gray is None:
+        lab.config(font=("Times", 60))
         labelText.set("Image not found")
-    elif np.all(readimage.gray == 255):
-        lab.config(font=("Times", 80))
-        labelText.set("Image empty")
+    elif np.all(read_image.gray == 255):
+        lab.config(font=("Times", 60))
+        labelText.set("Empty image")
     else:
-        predictionlist.append(readimage.gray)
+        predictionlist.append(read_image.gray)
         del predictionlist[0:-2]
 
         if np.array_equal(predictionlist[0],predictionlist[1]):
             pass
         else:
-            lab.config(font=("Times", 180))
             labelText.set("")
+            lab.config(font=("Times", 180))
             time.sleep(0.32)
             lab.configure(foreground='green')
             preddigit()
@@ -113,7 +113,7 @@ def readimage():
 
 
 def preddigit():
-    gray = cv2.resize(255 - readimage.gray, (28, 28))
+    gray = cv2.resize(255 - read_image.gray, (28, 28))
 
     (thresh, gray) = cv2.threshold(gray, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
 
@@ -165,7 +165,7 @@ while True:
 
         root = Tk()
         root.title("ADAM")
-        root.bind('<Key>', lambda e: preddigit())
+        root.bind('<Key>', lambda e: read_image())
         frame = Frame(root, width=1000, height=1200)
         frame.pack()
 
@@ -174,6 +174,6 @@ while True:
         lab.config(font=("Times", 180))
         lab.pack(side="top", fill='both')
 
-        readimage()
+        read_image()
 
         root.mainloop()
